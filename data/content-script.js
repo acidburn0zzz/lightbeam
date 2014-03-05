@@ -2,6 +2,7 @@
 // addon. It can see most of the addon, the window is either not visible or not
 // mutable so we use unsafeWindow below. This handles the post message
 // connections and does a little UI work on the side.
+console.log("loaded content-script.js");
 self.port.on('log', function log(args) {
     if (unsafeWindow && unsafeWindow.console) {
         unsafeWindow.console.log.call(unsafeWindow, args);
@@ -11,9 +12,10 @@ self.port.on('log', function log(args) {
 });
 
 self.port.on('connection', function(connection) {
+    console.log("got connection in content-script.js");
     if (unsafeWindow && unsafeWindow.aggregate) {
-        unsafeWindow.allConnections.push(connection);
-        unsafeWindow.aggregate.emit('connection', connection);
+        //unsafeWindow.allConnections.push(connection);
+        //unsafeWindow.aggregate.emit('connection', connection);
     } else {
         console.log('cannot call unsafeWindow.aggregate: ' + unsafeWindow);
     }
@@ -21,7 +23,7 @@ self.port.on('connection', function(connection) {
 
 self.port.on('update-blocklist', function(domain) {
     if (unsafeWindow && unsafeWindow.aggregate) {
-        unsafeWindow.aggregate.emit('update-blocklist', domain);
+        //unsafeWindow.aggregate.emit('update-blocklist', domain);
     } else {
         console.log('cannot call unsafeWindow.aggregate to update blocklist: ' + unsafeWindow);
     }
@@ -29,19 +31,19 @@ self.port.on('update-blocklist', function(domain) {
 
 self.port.on('update-blocklist-all', function(domains) {
     if (unsafeWindow && unsafeWindow.aggregate) {
-        unsafeWindow.aggregate.emit('update-blocklist-all', domains);
+        //unsafeWindow.aggregate.emit('update-blocklist-all', domains);
     } else {
         console.log('cannot call unsafeWindow.aggregate to update blocklist: ' + unsafeWindow);
     }
 });
 
 self.port.on('init', function(lightbeamToken) {
-    console.error('content-script::init()');
+    console.log('content-script::init()');
     // localStorage.lightbeamToken = lightbeamToken;
 
     if (unsafeWindow && unsafeWindow.aggregate && !unsafeWindow.aggregate.initialized) {
-        unsafeWindow.allConnections = getAllConnections();
-        unsafeWindow.aggregate.emit('load', unsafeWindow.allConnections);
+        //unsafeWindow.allConnections = getAllConnections();
+        //unsafeWindow.aggregate.emit('load', unsafeWindow.allConnections);
     } else {
         console.error('cannot call unsafeWindow.aggregate: %s', unsafeWindow);
     }
@@ -71,17 +73,6 @@ self.port.on("promptToSaveOldData", function(data) {
     unsafeWindow.promptToSaveOldDataDialog(data);
 });
 
-function getAllConnections() {
-    var allConnectionsAsArray = [];
-    Object.keys(localStorage).sort().forEach(function(key) {
-        if (key.charAt(0) == "2") { // date keys are in the format of yyyy-mm-dd
-            var conns = JSON.parse(localStorage.getItem(key));
-            allConnectionsAsArray = allConnectionsAsArray.concat(conns);
-        }
-    });
-    console.log('returning %s connections from getAllConnections', allConnectionsAsArray.length);
-    return allConnectionsAsArray;
-}
 
 self.port.on("private-browsing", function() {
     unsafeWindow.informUserOfUnsafeWindowsDialog();

@@ -1,5 +1,5 @@
 'use strict';
-
+console.log("loaded testlightbeam content script");
 console.log("loading lightbeam content script");
 const roundOffFactor = 5*60*1000; // in milliseconds
 var visualizations = {};
@@ -18,6 +18,7 @@ var uploadTimer;
 var saveTimer;
 
 // Constants for indexes of properties in array format
+/*
 const SOURCE = 0;
 const TARGET = 1;
 const TIMESTAMP = 2;
@@ -33,6 +34,7 @@ const METHOD = 11;
 const STATUS = 12;
 const CACHEABLE = 13;
 const FROM_PRIVATE_MODE = 14;
+*/
 
 var vizcanvas = document.querySelector('.vizcanvas');
 var mapDocument, mapcanvas;
@@ -152,8 +154,10 @@ function resetAdditionalUI(){
     document.querySelector(".graph-footer").classList.add("hidden");
     document.querySelector(".clock-footer").classList.add("hidden");
     document.querySelector(".list-footer").classList.add("hidden");
-    var vizName = currentVisualization.name;
-    document.querySelector("." + vizName + "-footer").classList.remove("hidden");
+    if (currentVisualization) {
+      var vizName = currentVisualization.name;
+      document.querySelector("." + vizName + "-footer").classList.remove("hidden");
+    }
 }
 
 
@@ -345,7 +349,6 @@ function getAllConnections() {
     return allConnectionsAsArray;
 }
 
-/*
 self.port.on('init', function(lightbeamToken) {
   allConnections = getAllConnections();
 });
@@ -353,4 +356,3 @@ self.port.on('init', function(lightbeamToken) {
 self.port.on("connection", function(connection) {
   allConnections.push(connection);
 });
-*/
